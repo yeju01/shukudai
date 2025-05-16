@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6.0
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=local.password
+      - MONGO_INITDB_DATABASE=local.db
+
+
+  gateway:
+    container_name: gateway
+    build:
+      context: ./gateway-server
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
+      - MONGO_URI=mongodb://mongo:27017/gateway
+    depends_on:
+      - mongo
+
+  auth:
+    build:
+      context: ./auth-server
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    environment:
+      - PORT=3001
+      - MONGO_URI=mongodb://mongo:27017/auth
+    depends_on:
+      - mongo
+
+  event:
+    build:
+      dockerfile: Dockerfile
+      context: ./event-server
+    ports:
+      - 3002:3002
+    environment:
+      - PORT=3002
+      - MONGO_URI=mongodb://mongo:27017/event
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
