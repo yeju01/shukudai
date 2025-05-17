@@ -9,8 +9,9 @@ export class AuthProxyController {
   async login(@Body() body: any) {
     console.log('[Gateway] sending auth_login...', body);
     const res = await this.authClient.login({
-      email: 'a@a.com',
-      password: '1234',
+      email: body.email,
+      password: body.password,
+      role: body.role,
     });
     console.log('[Gateway received]', res);
     return res;

@@ -8,9 +8,10 @@ export class AuthServiceController {
   constructor(private readonly userService: UserService) {}
 
   @MessagePattern('auth_register')
-  register(@Payload() body: CreateUserDto) {
+  async register(@Payload() body: CreateUserDto) {
     console.log('[Auth received register]', body);
-    const existing = this.userService.findByEmail(body.email);
+    const existing = await this.userService.findByEmail(body.email);
+    console.log('[Auth] checking if email exists...', existing);
     if (existing) {
       return { error: 'Email already exists' };
     }
