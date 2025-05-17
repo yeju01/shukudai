@@ -10,4 +10,9 @@ export class AuthClientService {
     const res = this.client.send('auth_login', payload);
     return await lastValueFrom(res);
   }
+
+  async register(payload: any) {
+    const res = this.client.send('auth_register', payload);
+    return await lastValueFrom(res);
+  }
 }
