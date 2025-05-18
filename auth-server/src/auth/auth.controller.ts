@@ -1,20 +1,26 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
+import { LoginUserDto } from 'src/dto/loginUser.dto';
 import { CreateUserDto } from 'src/dto/user.dto';
-import { UserService } from 'src/user/user.service';
+import { AuthService } from './auth.service';
 
 @Controller()
 export class AuthServiceController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @MessagePattern('auth_register')
-  async register(@Payload() body: CreateUserDto) {
-    console.log('[Auth received register]', body);
-    const existing = await this.userService.findByEmail(body.email);
-    console.log('[Auth] checking if email exists...', existing);
-    if (existing) {
-      return { error: 'Email already exists' };
+  async register(@Payload() dto: CreateUserDto) {
+    try {
+      console.log('[Auth received register]', dto);
+      return this.authService.createUser(dto);
+    } catch (e) {
+      console.error('[Auth register error]', e);
+      throw new RpcException('Login failed');
     }
-    return this.userService.create(body);
+  }
+
+  @MessagePattern('auth_login')
+  async login(@Payload() dto: LoginUserDto) {
+    return await this.authService.login(dto);
   }
 }

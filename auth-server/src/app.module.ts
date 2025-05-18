@@ -21,6 +21,24 @@ import { AuthModule } from './auth/auth.module';
       },
       inject: [ConfigService],
     }),
+    //JwtModule.registerAsync({
+    //  imports: [ConfigModule],
+    //  useFactory: async (config: ConfigService) => {
+    //    const secret = config.get<string>('JWT_SECRET');
+    //    const expiresIn = config.get<string>('JWT_EXPIRATION');
+
+    //    console.log('[JwtModule config] secret:', secret);
+    //    console.log('[JwtModule config] expiresIn:', expiresIn);
+
+    //    return {
+    //      secret,
+    //      signOptions: {
+    //        expiresIn,
+    //      },
+    //    };
+    //  },
+    //  inject: [ConfigService],
+    //}),
     AuthModule,
   ],
   controllers: [AppController],
