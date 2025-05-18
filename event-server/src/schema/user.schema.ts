@@ -14,11 +14,8 @@ export class User {
   @Prop({ required: true, enum: ['USER', 'OPERATOR', 'AUDITOR', 'ADMIN'] })
   role: string;
 
-  @Prop({ required: true, type: Date, default: Date.now })
+  @Prop({ default: Date.now })
   createdAt: Date;
-
-  //@Prop({ default: Date.now })
-  //updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
