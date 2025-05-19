@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 
 @Module({
   imports: [
-    ConfigModule, //note: login 분리
+    ConfigModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
