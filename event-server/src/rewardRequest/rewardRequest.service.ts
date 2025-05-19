@@ -106,4 +106,21 @@ export class RewardRequestService {
         return false;
     }
   }
+
+  async findByUserId(userId: string): Promise<RewardRequest[]> {
+    return this.rewardRequestModel
+      .find({ userId })
+      .populate('eventId', 'name description') // note: 무엇까지 가져올지 다시 확인
+      .sort({ createdAt: -1 })
+      .lean();
+  }
+
+  async findAll() {
+    return this.rewardRequestModel
+      .find()
+      .populate('eventId', 'name description')
+      .populate('userId', 'name')
+      .sort({ createdAt: -1 })
+      .lean();
+  }
 }
