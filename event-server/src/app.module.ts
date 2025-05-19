@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventModule } from './event/event.module';
+import { RewardModule } from './reward/reward.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { EventModule } from './event/event.module';
       inject: [ConfigService],
     }),
     EventModule,
+    RewardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
