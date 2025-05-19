@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventModule } from './event/event.module';
 import { RewardModule } from './reward/reward.module';
+import { RewardRequestModule } from './rewardRequest/rewardRequest.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { RewardModule } from './reward/reward.module';
     }),
     EventModule,
     RewardModule,
+    RewardRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

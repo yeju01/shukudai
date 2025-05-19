@@ -1,7 +1,12 @@
-import { Prop, Schema } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
-@Schema({ timestamps: { createdAt: 'requestedAt' } })
+export type RewardRequestDocument = HydratedDocument<RewardRequest>;
+
+@Schema({
+  collection: 'rewardrequests',
+  timestamps: { createdAt: 'requestedAt' },
+})
 export class RewardRequest {
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'users' })
   userId: mongoose.Types.ObjectId;
@@ -18,3 +23,7 @@ export class RewardRequest {
   @Prop()
   reason?: string;
 }
+
+export const RewardRequestSchema = SchemaFactory.createForClass(RewardRequest);
+
+RewardRequestSchema.index({ userId: 1, eventId: 1 }, { unique: true });
