@@ -4,6 +4,7 @@ import {
   Get,
   Inject,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -38,7 +39,7 @@ export class RewardRequestController {
   @UseGuards(AuthGuard('jwt'))
   @Roles('OPERATOR', 'ADMIN', 'AUDITOR') // note: 순위를 부여해 이상이면 통과하는 것으로 변경
   @Get('all')
-  async getAllRewardRequest() {
-    return this.rewardClient.send('reward_request_findAll', {});
+  async getAllRewardRequest(@Query() query) {
+    return this.rewardClient.send('reward_request_findAll', query);
   }
 }

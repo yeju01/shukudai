@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import {
+  findMany,
+  QueryArgs,
+  QueryOneArgs,
+} from 'src/database/database.mongoose.query';
 import { CreateRewardRequestDto } from 'src/dto/createRewardRequest.dto';
 import { Event } from 'src/schema/event.schema';
 import { RewardRequest } from 'src/schema/rewardRequest.schema';
@@ -107,20 +112,33 @@ export class RewardRequestService {
     }
   }
 
-  async findByUserId(userId: string): Promise<RewardRequest[]> {
-    return this.rewardRequestModel
-      .find({ userId })
-      .populate('eventId', 'name description') // note: 무엇까지 가져올지 다시 확인
-      .sort({ createdAt: -1 })
-      .lean();
+  async findAll(query?: QueryArgs<RewardRequest>): Promise<RewardRequest[]> {
+    const queryArgs: QueryArgs<RewardRequest> = {
+      filter: {
+        ...(query.filter.status && { status: query.filter.status }),
+        ...(query.filter.eventId && { eventId: query.filter.eventId }),
+        ...(query.filter.from || query.filter.to
+          ? {
+              requestedAt: {
+                ...(query.filter.from && { $gte: new Date(query.filter.from) }),
+                ...(query.filter.to && { $lte: new Date(query.filter.to) }),
+              },
+            }
+          : {}),
+      },
+      sort: { requestedAt: -1 },
+    };
+
+    return await findMany(this.rewardRequestModel, queryArgs);
   }
 
-  async findAll() {
-    return this.rewardRequestModel
-      .find()
-      .populate('eventId', 'name description')
-      .populate('userId', 'name')
-      .sort({ createdAt: -1 })
-      .lean();
+  async findAllByUserId(
+    userId: string,
+    query?: QueryOneArgs<RewardRequest>,
+  ): Promise<RewardRequest[]> {
+    return findMany(this.rewardRequestModel, {
+      ...query,
+      filter: { ...(query?.filter ?? {}), userId },
+    });
   }
 }

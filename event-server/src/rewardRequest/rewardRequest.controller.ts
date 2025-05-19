@@ -13,15 +13,15 @@ export class RewardRequestController {
     return await this.rewardRequestService.createRewardRequest(dto);
   }
 
+  @MessagePattern('reward_request_findAll')
+  async getAllRewardRequest(@Payload() filter: any) {
+    console.log('[RewardRequest received getAll]', filter);
+    return await this.rewardRequestService.findAll({ filter }); //note: 재조합 내부에서 필요 없을지도..?
+  }
+
   @MessagePattern('reward_request_findByUserId')
   async getRewardRequest(@Payload() userId: string) {
     console.log('[RewardRequest received get]', userId);
-    return await this.rewardRequestService.findByUserId(userId);
-  }
-
-  @MessagePattern('reward_request_findAll')
-  async getAllRewardRequest() {
-    console.log('[RewardRequest received getAll]');
-    return await this.rewardRequestService.findAll();
+    return await this.rewardRequestService.findAllByUserId(userId);
   }
 }
