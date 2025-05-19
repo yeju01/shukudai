@@ -35,10 +35,13 @@ export class Event {
     default: [],
     ref: 'rewards',
   })
-  rewards: mongoose.Types.ObjectId[];
+  rewardIds: mongoose.Types.ObjectId[];
 
   @Prop({ required: true, type: Date, default: Date.now })
   createdAt: Date;
+
+  @Prop({ required: true, type: Date, default: Date.now })
+  updatedAt: Date;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);

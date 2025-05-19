@@ -12,7 +12,7 @@ export class AuthServiceController {
   async register(@Payload() dto: CreateUserDto) {
     try {
       console.log('[Auth received register]', dto);
-      return this.authService.createUser(dto);
+      return await this.authService.createUser(dto);
     } catch (e) {
       console.error('[Auth register error]', e);
       throw new RpcException('Login failed');
