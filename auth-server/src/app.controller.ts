@@ -13,7 +13,7 @@ export class AppController {
 
   @MessagePattern('auth_login')
   handleLogin(@Payload() data: any) {
-    console.log('[Auth received login]', data); // note: logging
+    console.log('[Auth received login]', data);
     return { token: 'test-token', email: data.email };
   }
 }

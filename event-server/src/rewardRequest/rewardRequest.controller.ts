@@ -16,7 +16,7 @@ export class RewardRequestController {
   @MessagePattern('reward_request_findAll')
   async getAllRewardRequest(@Payload() filter: any) {
     console.log('[RewardRequest received getAll]', filter);
-    return await this.rewardRequestService.findAll({ filter }); //note: 재조합 내부에서 필요 없을지도..?
+    return await this.rewardRequestService.findAll({ filter });
   }
 
   @MessagePattern('reward_request_findByUserId')

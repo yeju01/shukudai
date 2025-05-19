@@ -11,9 +11,8 @@ export class Reward {
   @Prop()
   description?: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, enum: ['POINT', 'ITEM', 'COUPON'] })
   type: string;
-  //note: POINT | ITEM | COUPON
 
   @Prop({ required: true })
   amount: number;

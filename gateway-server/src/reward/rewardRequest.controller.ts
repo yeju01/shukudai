@@ -5,12 +5,15 @@ import {
   Inject,
   Post,
   Query,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
+import { RewardRequestQueryDto } from 'src/dto/rewardRequest.query.dto';
 import { Roles } from 'src/role/role.decorator';
+import { RolesGuard } from 'src/role/role.guard';
+import { User } from 'src/user/user.decorator';
+import { UserPayload } from 'src/user/userPayload.interface';
 
 @Controller('reward/request')
 export class RewardRequestController {
@@ -19,27 +22,32 @@ export class RewardRequestController {
     private readonly rewardClient: ClientProxy,
   ) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
-  async createRewardRequest(@Body('eventId') eventId: string, @Request() req) {
-    const userId = req.user.userId;
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('USER')
+  async createRewardRequest(
+    @Body('eventId') eventId: string,
+    @User() user: UserPayload,
+  ) {
+    const userId = user.userId;
     return this.rewardClient.send('reward_request_create', {
       userId,
       eventId,
     });
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  async getRewardRequest(@Request() req) {
-    const userId = req.user.userId;
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('USER')
+  async getRewardRequest(@User() user: UserPayload) {
+    const userId = user.userId;
     return this.rewardClient.send('reward_request_findByUserId', userId);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Roles('OPERATOR', 'ADMIN', 'AUDITOR') // note: 순위를 부여해 이상이면 통과하는 것으로 변경
   @Get('all')
-  async getAllRewardRequest(@Query() query) {
-    return this.rewardClient.send('reward_request_findAll', query);
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('OPERATOR', 'ADMIN', 'AUDITOR')
+  async getAllRewardRequest(@Query() filter?: RewardRequestQueryDto) {
+    return this.rewardClient.send('reward_request_findAll', filter); //note: 연결되는 곳 확인
   }
 }

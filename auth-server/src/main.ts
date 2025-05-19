@@ -8,7 +8,7 @@ async function bootstrap() {
     {
       transport: Transport.TCP,
       options: {
-        host: '0.0.0.0', // note: 컨테이너 내부에서 모든 인터페이스에서 수신 허용
+        host: '0.0.0.0', // note: 컨테이너 내부에서 모든 인터페이스 수신 허용
         port: 3001,
       },
     },

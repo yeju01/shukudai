@@ -16,6 +16,8 @@ export class AuthProxyController {
   constructor(private readonly authClient: AuthClientService) {}
 
   @Post('login')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('USER', 'OPERATOR', 'AUDITOR', 'ADMIN')
   async login(@Body() body: any) {
     console.log('[Gateway] sending auth_login...', body);
     const res = await this.authClient.login({
@@ -33,27 +35,5 @@ export class AuthProxyController {
     const res = await this.authClient.register(body);
     console.log('[Gateway received]', res);
     return res;
-  }
-
-  // note: 아래는 role guard 테스트용
-  @Get('user')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('USER')
-  checkUser(@Request() req) {
-    return { ok: true, role: req.user.role, message: 'USER allowed' };
-  }
-
-  @Get('operator')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('OPERATOR')
-  checkOperator(@Request() req) {
-    return { ok: true, role: req.user.role, message: 'OPERATOR allowed' };
-  }
-
-  @Get('admin')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN')
-  checkAdmin(@Request() req) {
-    return { ok: true, role: req.user.role, message: 'ADMIN allowed' };
   }
 }

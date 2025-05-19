@@ -10,7 +10,7 @@ import { AuthProxyController } from './auth.controller';
         name: 'AUTH_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: 'auth', // note: docker-compose에서 정의한 서비스명
+          host: 'auth',
           port: 3001,
         },
       },

@@ -11,7 +11,7 @@ import { RewardRequestController } from './rewardRequest.controller';
         name: 'REWARD_SERVICE',
         transport: Transport.TCP,
         options: {
-          host: 'event', // note: docker-compose에서 정의한 서비스명
+          host: 'event',
           port: 3002,
         },
       },
