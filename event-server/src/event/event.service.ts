@@ -23,7 +23,7 @@ export class EventService {
 
     const exists = await this.eventModel.exists({ name });
     if (exists) {
-      throw new Error('Event already exists');
+      throw new Error('Event already exists'); //note
     }
 
     const newEvent = new this.eventModel({

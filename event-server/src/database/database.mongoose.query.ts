@@ -16,9 +16,17 @@ export const findOne = <Schema>(
 ) => {
   const query = model.findOne(queryOneArgs?.filter ?? {});
 
-  if (queryOneArgs?.sort) query.sort(queryOneArgs.sort);
-  if (queryOneArgs?.skip != null) query.skip(queryOneArgs.skip);
-  if (queryOneArgs?.select) query.select(queryOneArgs.select);
+  if (queryOneArgs?.sort) {
+    query.sort(queryOneArgs.sort);
+  }
+
+  if (queryOneArgs?.skip) {
+    query.skip(queryOneArgs.skip);
+  }
+
+  if (queryOneArgs?.select) {
+    query.select(queryOneArgs.select);
+  }
 
   return query;
 };
@@ -36,10 +44,21 @@ export const findMany = <Schema>(
 ) => {
   const query = model.find(queryArgs?.filter ?? {});
 
-  if (queryArgs?.sort) query.sort(queryArgs.sort);
-  if (queryArgs?.limit != null) query.limit(queryArgs.limit);
-  if (queryArgs?.skip != null) query.skip(queryArgs.skip);
-  if (queryArgs?.select) query.select(queryArgs.select);
+  if (queryArgs?.sort) {
+    query.sort(queryArgs.sort);
+  }
+
+  if (queryArgs?.skip) {
+    query.skip(queryArgs.skip);
+  }
+
+  if (queryArgs?.limit) {
+    query.limit(queryArgs.limit);
+  }
+
+  if (queryArgs?.select) {
+    query.select(queryArgs.select);
+  }
 
   return query;
 };
@@ -48,5 +67,5 @@ export const findManyAndLean = <Schema>(
   model: Model<Schema>,
   queryArgs?: QueryArgs<Schema>,
 ) => {
-  return findMany(model, queryArgs).lean<Schema>();
+  return findMany(model, queryArgs).lean<Schema[]>();
 };

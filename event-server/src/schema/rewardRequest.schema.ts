@@ -25,5 +25,3 @@ export class RewardRequest {
 }
 
 export const RewardRequestSchema = SchemaFactory.createForClass(RewardRequest);
-
-RewardRequestSchema.index({ userId: 1, eventId: 1 }, { unique: true });

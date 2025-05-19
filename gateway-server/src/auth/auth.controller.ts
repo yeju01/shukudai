@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/role/role.decorator';
-import { RolesGuard } from 'src/role/role.guard';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthClientService } from './auth.client';
 
 @Controller('auth')
@@ -16,8 +6,6 @@ export class AuthProxyController {
   constructor(private readonly authClient: AuthClientService) {}
 
   @Post('login')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('USER', 'OPERATOR', 'AUDITOR', 'ADMIN')
   async login(@Body() body: any) {
     console.log('[Gateway] sending auth_login...', body);
     const res = await this.authClient.login({

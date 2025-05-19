@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import {
   findMany,
+  findManyAndLean,
   QueryArgs,
   QueryOneArgs,
 } from 'src/database/database.mongoose.query';
@@ -32,7 +33,12 @@ export class RewardRequestService {
       eventId,
     });
     if (exists) {
-      throw new Error('Reward request already exists');
+      return await this.rewardRequestModel.create({
+        userId,
+        eventId,
+        status: 'REJECTED',
+        reason: '중복 요청',
+      });
     }
 
     const event = await this.eventModel.findById<Event>(eventId);
@@ -112,24 +118,17 @@ export class RewardRequestService {
     }
   }
 
-  async findAll(query?: QueryArgs<RewardRequest>): Promise<RewardRequest[]> {
-    const queryArgs: QueryArgs<RewardRequest> = {
-      filter: {
-        ...(query.filter.status && { status: query.filter.status }),
-        ...(query.filter.eventId && { eventId: query.filter.eventId }),
-        ...(query.filter.from || query.filter.to
-          ? {
-              requestedAt: {
-                ...(query.filter.from && { $gte: new Date(query.filter.from) }),
-                ...(query.filter.to && { $lte: new Date(query.filter.to) }),
-              },
-            }
-          : {}),
-      },
+  async findAll(filter?: FilterQuery<RewardRequest>): Promise<RewardRequest[]> {
+    return this.findAllByFilter({
+      filter,
       sort: { requestedAt: -1 },
-    };
+    });
+  }
 
-    return await findMany(this.rewardRequestModel, queryArgs);
+  async findAllByFilter(
+    queryArgs?: QueryArgs<RewardRequest>,
+  ): Promise<RewardRequest[]> {
+    return await findManyAndLean(this.rewardRequestModel, queryArgs);
   }
 
   async findAllByUserId(

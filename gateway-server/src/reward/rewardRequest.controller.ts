@@ -1,14 +1,17 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   Inject,
+  InternalServerErrorException,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
+import { lastValueFrom } from 'rxjs';
 import { RewardRequestQueryDto } from 'src/dto/rewardRequest.query.dto';
 import { Roles } from 'src/role/role.decorator';
 import { RolesGuard } from 'src/role/role.guard';
@@ -29,11 +32,21 @@ export class RewardRequestController {
     @Body('eventId') eventId: string,
     @User() user: UserPayload,
   ) {
-    const userId = user.userId;
-    return this.rewardClient.send('reward_request_create', {
-      userId,
-      eventId,
-    });
+    try {
+      const userId = user.userId;
+      await lastValueFrom(
+        this.rewardClient.send('reward_request_create', {
+          userId,
+          eventId,
+        }),
+      );
+    } catch (error) {
+      console.error('[RewardRequest create error]', error);
+      if (error instanceof RpcException) {
+        throw new BadRequestException(error.getError());
+      }
+      throw new InternalServerErrorException('보상 요청 처리 실패');
+    }
   }
 
   @Get('me')

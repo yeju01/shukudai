@@ -9,14 +9,19 @@ export class RewardRequestController {
 
   @MessagePattern('reward_request_create')
   async createRewardRequest(@Payload() dto: CreateRewardRequestDto) {
-    console.log('[RewardRequest received create]', dto);
-    return await this.rewardRequestService.createRewardRequest(dto);
+    try {
+      console.log('[RewardRequest received create]', dto);
+      return await this.rewardRequestService.createRewardRequest(dto);
+    } catch (error) {
+      console.error('[RewardRequest create error]', error);
+      throw error;
+    }
   }
 
   @MessagePattern('reward_request_findAll')
   async getAllRewardRequest(@Payload() filter: any) {
     console.log('[RewardRequest received getAll]', filter);
-    return await this.rewardRequestService.findAll({ filter });
+    return await this.rewardRequestService.findAll(filter);
   }
 
   @MessagePattern('reward_request_findByUserId')
