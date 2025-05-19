@@ -5,15 +5,4 @@ import { AppService } from './app.service';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
-
-  @MessagePattern('auth_login')
-  handleLogin(@Payload() data: any) {
-    console.log('[Auth received login]', data);
-    return { token: 'test-token', email: data.email };
-  }
 }

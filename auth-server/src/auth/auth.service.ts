@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
@@ -15,13 +19,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  // note: user를 auth에서 해도 될까...
   async createUser(dto: CreateUserDto) {
     const { email, password, role } = dto;
 
     const exists = await this.userModel.exists({ email });
     if (exists) {
-      throw new UnauthorizedException('User already exists');
+      throw new ConflictException('이메일 중복');
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -47,14 +50,15 @@ export class AuthService {
     try {
       const user = await this.validateUser(loginUser.email, loginUser.password);
       if (!user) {
-        throw new UnauthorizedException('Invalid credentials');
+        throw new UnauthorizedException('등록되지 않은 유저');
       }
       const payload = { email: user.email, sub: user._id, role: user.role };
-      const accessToken = await this.jwtService.sign(payload); //note: 이후 분리하기
+      console.log('[Auth login] payload', payload);
+      const accessToken = this.jwtService.sign(payload);
       return { accessToken };
     } catch (e) {
       console.error('[Auth login error]', e);
-      throw new UnauthorizedException('Login failed');
+      throw new UnauthorizedException('등록되지 않은 유저');
     }
   }
 }

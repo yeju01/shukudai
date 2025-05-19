@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, isValidObjectId } from 'mongoose';
 import { CreateEventDto } from 'src/dto/createEvent.dto';
 import { Event } from 'src/schema/event.schema';
 
@@ -47,6 +48,16 @@ export class EventService {
   }
 
   async getEventById(id: string): Promise<Event | null> {
-    return await this.eventModel.findById(id).exec();
+    if (!isValidObjectId(id)) {
+      throw new RpcException('잘못된 ID 형식');
+    }
+
+    const event = await this.eventModel.findById(id).exec();
+
+    if (!event) {
+      throw new RpcException('이벤트 없음');
+    }
+
+    return event;
   }
 }

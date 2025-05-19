@@ -1,15 +1,17 @@
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   Get,
   Inject,
   InternalServerErrorException,
+  NotFoundException,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
 import { lastValueFrom } from 'rxjs';
 import { RewardRequestQueryDto } from 'src/dto/rewardRequest.query.dto';
@@ -41,11 +43,21 @@ export class RewardRequestController {
         }),
       );
     } catch (error) {
-      console.error('[RewardRequest create error]', error);
-      if (error instanceof RpcException) {
-        throw new BadRequestException(error.getError());
+      if (error.message === '이벤트 없음') {
+        console.error('[Gateway] Event not found', error);
+        throw new NotFoundException('이벤트 없음');
       }
-      throw new InternalServerErrorException('보상 요청 처리 실패');
+      if (error.message === '잘못된 보상 요청 형식') {
+        console.error('[Gateway] Invalid reward request format', error);
+        throw new BadRequestException('잘못된 보상 요청 형식');
+      }
+      if (error.message === '보상 중복 요청') {
+        console.error('[Gateway] Already requested reward', error);
+        throw new ConflictException('보상 중복 요청');
+      }
+
+      console.error('[Gateway] Error creating reward request', error);
+      throw new InternalServerErrorException('보상 요청 생성 중 오류가 발생');
     }
   }
 
@@ -53,14 +65,26 @@ export class RewardRequestController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('USER')
   async getRewardRequest(@User() user: UserPayload) {
-    const userId = user.userId;
-    return this.rewardClient.send('reward_request_findByUserId', userId);
+    try {
+      const userId = user.userId;
+      return this.rewardClient.send('reward_request_findByUserId', userId);
+    } catch (error) {
+      console.error('[Gateway] Error fetching reward request', error);
+      throw new InternalServerErrorException('보상 요청 조회 중 오류가 발생');
+    }
   }
 
   @Get('all')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('OPERATOR', 'ADMIN', 'AUDITOR')
   async getAllRewardRequest(@Query() filter?: RewardRequestQueryDto) {
-    return this.rewardClient.send('reward_request_findAll', filter); //note: 연결되는 곳 확인
+    try {
+      return this.rewardClient.send('reward_request_findAll', filter); //note: 연결쪽 확인
+    } catch (error) {
+      console.error('[Gateway] Error fetching all reward requests', error);
+      throw new InternalServerErrorException(
+        '모든 보상 요청 조회 중 오류가 발생',
+      );
+    }
   }
 }

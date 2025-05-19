@@ -1,10 +1,9 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  console.log('[EventServer] Initializing TCP microservice...');
-
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
@@ -15,7 +14,14 @@ async function bootstrap() {
       },
     },
   );
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
+
   await app.listen();
-  console.log('[EventServer] TCP microservice is LISTENING on port 3002');
 }
 bootstrap();
