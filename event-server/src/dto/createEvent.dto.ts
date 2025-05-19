@@ -32,7 +32,4 @@ export class CreateEventDto {
   @IsArray()
   @IsMongoId({ each: true })
   rewardIds: string[];
-
-  //@IsMongoId()
-  //createdBy: string;
 }
