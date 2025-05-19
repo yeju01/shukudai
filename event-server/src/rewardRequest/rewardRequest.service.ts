@@ -46,6 +46,15 @@ export class RewardRequestService {
       throw new Error('Event not found');
     }
 
+    if (event.status !== 'ACTIVE') {
+      return this.rewardRequestModel.create({
+        userId,
+        eventId,
+        status: 'REJECTED',
+        reason: '이벤트 비활성화',
+      });
+    }
+
     const now = new Date();
     if (now < event.startAt || now > event.endAt) {
       return this.rewardRequestModel.create({
