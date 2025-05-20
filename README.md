@@ -1,3 +1,8 @@
+## docker compose 실행하기
+docker compose up --build
+## docker compose 끄기
+dokcer compose down -v
+
 ## 선행 파일 준비
 ### .env
 #### auth-server/.env
