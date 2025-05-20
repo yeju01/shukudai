@@ -14,6 +14,11 @@ export class EventClientService {
     return await lastValueFrom(res);
   }
 
+  async updateEvent(payload: any) {
+    const res = this.client.send('event_update', payload);
+    return await lastValueFrom(res);
+  }
+
   async listEvents() {
     const res = this.client.send('event_list', {});
     return await lastValueFrom(res);

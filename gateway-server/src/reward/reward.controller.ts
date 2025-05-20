@@ -2,8 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -42,10 +44,10 @@ export class RewardProxyController {
     }
   }
 
-  @Post('delete')
+  @Delete('delete/:id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('OPERATOR', 'ADMIN')
-  async deleteReward(@Body('id') id: string) {
+  async deleteReward(@Param('id') id: string) {
     try {
       return await this.rewardClient.deleteReward(id);
     } catch (error) {

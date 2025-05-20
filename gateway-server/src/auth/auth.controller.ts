@@ -4,6 +4,7 @@ import {
   Controller,
   InternalServerErrorException,
   Post,
+  Put,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -25,11 +26,7 @@ export class AuthProxyController {
         role: body.role,
       });
     } catch (error) {
-      if (error.message === '등록되지 않은 유저 또는 입력 실패') {
-        throw new UnauthorizedException('등록되지 않은 유저 또는 입력 실패');
-      }
-
-      throw new InternalServerErrorException('로그인 처리 중 요류 발생');
+      throw new UnauthorizedException('등록되지 않은 유저 또는 입력 실패');
     }
   }
 
@@ -49,10 +46,11 @@ export class AuthProxyController {
     }
   }
 
-  @Post('roleUpdate')
+  @Put('roleUpdate')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('ADMIN')
   async roleUpdate(@Body() body: any) {
+    console.log('user:', body.user);
     return await this.authClient.roleUpdate(body);
   }
 }

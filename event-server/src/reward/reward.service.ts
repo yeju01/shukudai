@@ -41,15 +41,16 @@ export class RewardService {
   }
 
   async deleteReward(id: string): Promise<Reward | null> {
+    console.log('deleteReward', id);
     const reward = await this.rewardModel.findById(id).exec();
     if (!reward) {
       throw new RpcException('해당 리워드 없음');
     }
 
-    const events = await this.eventModel.find({ rewardIds: id }).exec();
-    if (events.length > 0) {
-      throw new RpcException('이벤트에서 사용중인 리워드라 삭제 불가능');
-    }
+    //const events = await this.eventModel.find({ rewardIds: id }).exec();
+    //if (events.length > 0) {
+    //  throw new RpcException('이벤트에서 사용중인 리워드라 삭제 불가능');
+    //}
 
     return await this.rewardModel.findByIdAndDelete(id).exec();
   }

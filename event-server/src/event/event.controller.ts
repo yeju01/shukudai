@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateEventDto } from 'src/dto/createEvent.dto';
+import { UpdateEventDto } from 'src/dto/updateEvent.dto';
 import { EventService } from './event.service';
 
 @Controller()
@@ -10,6 +11,11 @@ export class EventController {
   @MessagePattern('event_create')
   async createEvent(@Payload() dto: CreateEventDto) {
     return await this.eventService.createEvent(dto);
+  }
+
+  @MessagePattern('event_update')
+  async updateEvent(@Payload() dto: UpdateEventDto) {
+    return await this.eventService.updateEvent(dto);
   }
 
   @MessagePattern('event_list')

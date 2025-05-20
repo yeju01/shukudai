@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/role/role.decorator';
 import { RolesGuard } from 'src/role/role.guard';
@@ -13,6 +21,14 @@ export class EventProxyController {
   @Roles('OPERATOR', 'ADMIN')
   async createEvent(@Body() body: any) {
     const res = await this.eventClient.createEvent(body);
+    return res;
+  }
+
+  @Put('update')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('OPERATOR', 'ADMIN')
+  async updateEvent(@Body() body: any) {
+    const res = await this.eventClient.updateEvent(body);
     return res;
   }
 
