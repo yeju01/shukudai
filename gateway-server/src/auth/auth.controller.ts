@@ -5,7 +5,11 @@ import {
   InternalServerErrorException,
   Post,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from 'src/role/role.decorator';
+import { RolesGuard } from 'src/role/role.guard';
 import { AuthClientService } from './auth.client';
 
 @Controller('auth')
@@ -32,8 +36,7 @@ export class AuthProxyController {
   @Post('register')
   async register(@Body() body: any) {
     try {
-      const res = await this.authClient.register(body);
-      return res;
+      return await this.authClient.register(body);
     } catch (error) {
       if (error.message === '잘못된 이메일 형식') {
         throw new UnauthorizedException('잘못된 이메일 형식');
@@ -44,5 +47,12 @@ export class AuthProxyController {
 
       throw new UnauthorizedException('회원가입 처리 중 오류 발생');
     }
+  }
+
+  @Post('roleUpdate')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('ADMIN')
+  async roleUpdate(@Body() body: any) {
+    return await this.authClient.roleUpdate(body);
   }
 }

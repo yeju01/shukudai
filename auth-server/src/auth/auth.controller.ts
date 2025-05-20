@@ -45,4 +45,9 @@ export class AuthServiceController {
       });
     }
   }
+
+  @MessagePattern('auth_role_update')
+  async roleUpdate(@Payload() dto: any) {
+    return await this.authService.roleUpdate(dto);
+  }
 }

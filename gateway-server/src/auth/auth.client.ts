@@ -18,4 +18,9 @@ export class AuthClientService {
     const res = this.client.send('auth_register', payload);
     return await lastValueFrom(res);
   }
+
+  async roleUpdate(payload: any) {
+    const res = this.client.send('auth_role_update', payload);
+    return await lastValueFrom(res);
+  }
 }

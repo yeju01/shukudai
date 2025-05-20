@@ -4,10 +4,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { LoginUserDto } from 'src/dto/loginUser.dto';
+import { UpdateUserRoleDto } from 'src/dto/updateUserRole.dto';
 import { CreateUserDto } from 'src/dto/user.dto';
 import { User } from 'src/schema/user.schema';
 
@@ -58,5 +60,19 @@ export class AuthService {
     } catch (e) {
       throw new UnauthorizedException('등록되지 않은 유저');
     }
+  }
+
+  async roleUpdate(dto: UpdateUserRoleDto): Promise<User> {
+    const { userId, newRole } = dto;
+
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new RpcException('사용자를 찾을 수 없습니다');
+    }
+
+    user.role = newRole;
+    await user.save();
+
+    return user;
   }
 }
