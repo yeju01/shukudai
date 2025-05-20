@@ -9,19 +9,16 @@ export class EventController {
 
   @MessagePattern('event_create')
   async createEvent(@Payload() dto: CreateEventDto) {
-    console.log('[Event received create]', dto);
     return await this.eventService.createEvent(dto);
   }
 
   @MessagePattern('event_list')
   async listEvents() {
-    console.log('[Event received list]');
     return await this.eventService.listEvents();
   }
 
   @MessagePattern('event_detail')
   async getEventById(@Payload() id: string) {
-    console.log('[Event received detail]', id);
     return await this.eventService.getEventById(id);
   }
 }

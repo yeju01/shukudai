@@ -1,4 +1,12 @@
-import { Body, Controller, InternalServerErrorException, NotFoundException, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/role/role.decorator';
 import { RolesGuard } from 'src/role/role.guard';
@@ -10,22 +18,42 @@ export class RewardProxyController {
 
   @Post('create')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('OPERATOR')
+  @Roles('OPERATOR', 'ADMIN')
   async createReward(@Body() body: any) {
     try {
-    console.log('[Gateway] sending reward_create...', body);
-    const res = await this.rewardClient.createReward(body);
-    console.log('[Gateway received]', res);
-    return res;
+      return await this.rewardClient.createReward(body);
     } catch (error) {
       if (error.message === '이벤트 없음') {
-        console.error('[Gateway] Event not found', error);
         throw new NotFoundException('이벤트 없음');
       }
-      //note: 형식잘못됨
 
-      console.error('[Gateway] Reward creation failed', error);
-      throw new InternalServerErrorException('보상 생성 실패');
+      throw new BadRequestException('보상 생성 실패');
+    }
+  }
+
+  @Get('list')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('OPERATOR', 'ADMIN')
+  async listRewards() {
+    try {
+      return await this.rewardClient.listRewards();
+    } catch (error) {
+      throw new BadRequestException('보상 목록 조회 실패');
+    }
+  }
+
+  @Post('delete')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('OPERATOR', 'ADMIN')
+  async deleteReward(@Body('id') id: string) {
+    try {
+      return await this.rewardClient.deleteReward(id);
+    } catch (error) {
+      if (error.message === '보상 없음') {
+        throw new NotFoundException('보상 없음');
+      }
+
+      throw new BadRequestException('보상 삭제 실패');
     }
   }
 }

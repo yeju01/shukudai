@@ -24,7 +24,7 @@ export class EventService {
 
     const exists = await this.eventModel.exists({ name });
     if (exists) {
-      throw new Error('Event already exists'); //note
+      throw new RpcException('이벤트 중복');
     }
 
     const newEvent = new this.eventModel({

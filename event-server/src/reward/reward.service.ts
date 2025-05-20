@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateRewardDto } from 'src/dto/createReward.dto';
@@ -35,41 +36,21 @@ export class RewardService {
     return await newReward.save();
   }
 
-  //async listRewards(): Promise<Reward[]> {
-  //  return await this.rewardModel.find().exec();
-  //}
+  async listRewards(): Promise<Reward[]> {
+    return await this.rewardModel.find().exec();
+  }
 
-  //async getRewardById(id: string): Promise<Reward | null> {
-  //  return await this.rewardModel.findById(id).exec();
-  //}
+  async deleteReward(id: string): Promise<Reward | null> {
+    const reward = await this.rewardModel.findById(id).exec();
+    if (!reward) {
+      throw new RpcException('해당 리워드 없음');
+    }
 
-  //async updateReward(dto: any): Promise<Reward | null> {
-  //  const { id, name, description, type, payload } = dto;
+    const events = await this.eventModel.find({ rewardIds: id }).exec();
+    if (events.length > 0) {
+      throw new RpcException('이벤트에서 사용중인 리워드라 삭제 불가능');
+    }
 
-  //  const reward = await this.rewardModel.findById(id).exec();
-  //  if (!reward) {
-  //    throw new Error('Reward not found');
-  //  }
-
-  //  reward.name = name;
-  //  reward.description = description;
-  //  reward.type = type;
-  //  reward.payload = payload;
-  //  reward.updatedAt = new Date();
-
-  //  return await reward.save();
-  //}
-  //async deleteReward(id: string): Promise<Reward | null> {
-  //  const reward = await this.rewardModel.findById(id).exec();
-  //  if (!reward) {
-  //    throw new Error('Reward not found');
-  //  }
-
-  //  const events = await this.eventModel.find({ rewardIds: id }).exec();
-  //  if (events.length > 0) {
-  //    throw new Error('Cannot delete reward, it is used in events');
-  //  }
-
-  //  return await this.rewardModel.findByIdAndDelete(id).exec();
-  //}
+    return await this.rewardModel.findByIdAndDelete(id).exec();
+  }
 }

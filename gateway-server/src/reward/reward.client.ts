@@ -14,14 +14,13 @@ export class RewardClientService {
     return await lastValueFrom(res);
   }
 
-  // note: 아래는 아직 테스트 전
   async listRewards() {
     const res = this.client.send('reward_list', {});
     return await lastValueFrom(res);
   }
 
-  async getRewardDetail(id: string) {
-    const res = this.client.send('reward_detail', id);
+  async deleteReward(id: string) {
+    const res = this.client.send('reward_delete', id);
     return await lastValueFrom(res);
   }
 }

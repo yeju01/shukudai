@@ -44,19 +44,15 @@ export class RewardRequestController {
       );
     } catch (error) {
       if (error.message === '이벤트 없음') {
-        console.error('[Gateway] Event not found', error);
         throw new NotFoundException('이벤트 없음');
       }
       if (error.message === '잘못된 보상 요청 형식') {
-        console.error('[Gateway] Invalid reward request format', error);
         throw new BadRequestException('잘못된 보상 요청 형식');
       }
       if (error.message === '보상 중복 요청') {
-        console.error('[Gateway] Already requested reward', error);
         throw new ConflictException('보상 중복 요청');
       }
 
-      console.error('[Gateway] Error creating reward request', error);
       throw new InternalServerErrorException('보상 요청 생성 중 오류가 발생');
     }
   }
@@ -69,7 +65,6 @@ export class RewardRequestController {
       const userId = user.userId;
       return this.rewardClient.send('reward_request_findByUserId', userId);
     } catch (error) {
-      console.error('[Gateway] Error fetching reward request', error);
       throw new InternalServerErrorException('보상 요청 조회 중 오류가 발생');
     }
   }
@@ -79,9 +74,8 @@ export class RewardRequestController {
   @Roles('OPERATOR', 'ADMIN', 'AUDITOR')
   async getAllRewardRequest(@Query() filter?: RewardRequestQueryDto) {
     try {
-      return this.rewardClient.send('reward_request_findAll', filter); //note: 연결쪽 확인
+      return this.rewardClient.send('reward_request_findAll', filter);
     } catch (error) {
-      console.error('[Gateway] Error fetching all reward requests', error);
       throw new InternalServerErrorException(
         '모든 보상 요청 조회 중 오류가 발생',
       );

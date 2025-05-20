@@ -53,11 +53,9 @@ export class AuthService {
         throw new UnauthorizedException('등록되지 않은 유저');
       }
       const payload = { email: user.email, sub: user._id, role: user.role };
-      console.log('[Auth login] payload', payload);
       const accessToken = this.jwtService.sign(payload);
       return { accessToken };
     } catch (e) {
-      console.error('[Auth login error]', e);
       throw new UnauthorizedException('등록되지 않은 유저');
     }
   }
