@@ -20,7 +20,7 @@ export class RewardService {
 
     const exists = await this.rewardModel.exists({ name });
     if (exists) {
-      throw new Error('Reward already exists');
+      throw new RpcException('이미 존재하는 리워드');
     }
 
     const newReward = new this.rewardModel({

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import {
@@ -28,22 +29,18 @@ export class RewardRequestService {
   ): Promise<RewardRequest> {
     const { userId, eventId } = dto;
 
-    const exists = await this.rewardRequestModel.exists({
+    const granted = await this.rewardRequestModel.findOne({
       userId,
       eventId,
+      status: 'GRANTED',
     });
-    if (exists) {
-      return await this.rewardRequestModel.create({
-        userId,
-        eventId,
-        status: 'REJECTED',
-        reason: '중복 요청',
-      });
+    if (granted) {
+      throw new RpcException('이미 지급된 보상');
     }
 
     const event = await this.eventModel.findById<Event>(eventId);
     if (!event) {
-      throw new Error('Event not found');
+      throw new RpcException('해당 이벤트 없음');
     }
 
     if (event.status !== 'ACTIVE') {
