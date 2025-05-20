@@ -13,7 +13,6 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=local.password
       - MONGO_INITDB_DATABASE=local.db
 
-
   gateway:
     container_name: gateway
     build:
@@ -23,11 +22,11 @@ services:
       - 3000:3000
     environment:
       - PORT=3000
-      - MONGO_URI=mongodb://mongo:27017/gateway
     depends_on:
       - mongo
 
   auth:
+    container_name: auth
     build:
       context: ./auth-server
       dockerfile: Dockerfile
@@ -35,21 +34,24 @@ services:
       - 3001:3001
     environment:
       - PORT=3001
-      - MONGO_URI=mongodb://mongo:27017/auth
     depends_on:
       - mongo
+    env_file:
+      - ./auth-server/.env
 
   event:
+    container_name: event
     build:
-      dockerfile: Dockerfile
       context: ./event-server
+      dockerfile: Dockerfile
     ports:
       - 3002:3002
     environment:
       - PORT=3002
-      - MONGO_URI=mongodb://mongo:27017/event
     depends_on:
       - mongo
+    env_file:
+      - ./event-server/.env
 
 volumes:
   mongo_data:
