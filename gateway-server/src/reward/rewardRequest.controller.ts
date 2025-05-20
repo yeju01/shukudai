@@ -29,7 +29,7 @@ export class RewardRequestController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('USER')
+  @Roles('USER', 'ADMIN')
   async createRewardRequest(
     @Body('eventId') eventId: string,
     @User() user: UserPayload,
@@ -59,7 +59,7 @@ export class RewardRequestController {
 
   @Get('me')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('USER')
+  @Roles('USER', 'ADMIN')
   async getRewardRequest(@User() user: UserPayload) {
     try {
       const userId = user.userId;
