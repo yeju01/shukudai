@@ -7,7 +7,7 @@ services:
       - 27017:27017
     volumes:
       - mongo_data:/data/db
-      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh # note: 사용하지 않으면 주석처리
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=local.password
